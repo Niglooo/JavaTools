@@ -22,7 +22,7 @@ public class Injector
 	
 	/**
 	 * When set to {@code true} <br/>
-	 * - {@link #declareInjectAndPostConstructInstance(Object)} is a no-op<br/>
+	 * - {@link #init(Object)} is a no-op<br/>
 	 * - {@link #getInstance(Class)} always return {@code null}
 	 */
 	private static final boolean DISABLE_INJECTION = false;

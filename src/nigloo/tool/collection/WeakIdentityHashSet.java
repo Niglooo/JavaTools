@@ -9,17 +9,16 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Set of WeakReference which uses referential equality (a == b instead of a.equals(b)) 
  *
  * @param <T> Type of elements
  */
-public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
+public class WeakIdentityHashSet<T> extends AbstractSet<T> {
 
-	static private final int DEFAULT_INITIAL_CAPACITY = 10;
-	static private final float DEFAULT_LOAD_FACTOR = 0.75f;
+	private static final int DEFAULT_INITIAL_CAPACITY = 10;
+	private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 	
 	private final ReferenceQueue<T> queue = new ReferenceQueue<>();
 	
@@ -30,11 +29,12 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 	
 	private int modCount;
 	
-	@SuppressWarnings("unchecked")
 	public WeakIdentityHashSet() {
-		loadFactor = DEFAULT_LOAD_FACTOR; // must be set BEFORE use of computeCapacity
-		table = (Node<T>[]) new Node<?>[computeCapacity(DEFAULT_INITIAL_CAPACITY)];
-		size = 0;
+		this.loadFactor = DEFAULT_LOAD_FACTOR; // must be set BEFORE use of computeCapacity
+		@SuppressWarnings({ "unchecked" })
+		Node<T>[] t = (Node<T>[]) new Node<?>[computeCapacity(DEFAULT_INITIAL_CAPACITY)];
+		this.table = t;
+		this.size = 0;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 	
 	private class HashIterator implements Iterator<T> {
 
-		private int index;
+		private int nextIndex;
 		private Node<T> nextNode;
 
 		/**
@@ -73,10 +73,9 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 		private T nextValue;
 
 		/**
-		 * Strong reference needed to avoid disappearance of value
-		 * between next() and remove()
+		 * Used by HashIterator.remove
 		 */
-		private T value;
+		private Node<T> currentNode;
 		
 		int expectedModCount;
 		
@@ -84,11 +83,11 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 		private HashIterator() {
 			expectedModCount = modCount;
 			
-			value = null;
+			currentNode = null;
 			nextValue = null;
-			for (index = 0 ; index < table.length ; index++) {
-				if (table[index] != null && (nextValue = table[index].get()) != null) {
-					nextNode = table[index];
+			for (nextIndex = 0 ; nextIndex < table.length ; nextIndex++) {
+				if (table[nextIndex] != null && (nextValue = table[nextIndex].get()) != null) {
+					nextNode = table[nextIndex];
 					return;
 				}
 			}
@@ -106,11 +105,11 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 			if (nextValue == null)
 				throw new NoSuchElementException();
 			
-			value = nextValue;
+			T value = nextValue;
+			currentNode = nextNode;
 			
 			nextNode = nextNode.next;
-			
-			while (index < table.length)
+			while (nextIndex < table.length)
 			{
 				while (nextNode != null)
 				{
@@ -121,9 +120,9 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 					nextNode = nextNode.next;
 				}
 				
-				index++;
-				if (index < table.length)
-					nextNode = table[index];
+				nextIndex++;
+				if (nextIndex < table.length)
+					nextNode = table[nextIndex];
 				else
 					nextValue = null;
 			}
@@ -133,14 +132,16 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 		
 		@Override
 		public void remove() {
-			if (value == null)
-				throw new IllegalStateException();
 			if (modCount != expectedModCount)
 				throw new ConcurrentModificationException();
+			if (currentNode == null)
+				throw new IllegalStateException();
 
-			WeakIdentityHashSet.this.remove(value);
+			modCount++;
+			currentNode.enqueue();
+			currentNode = null;
+			
 			expectedModCount = modCount;
-			value = null;
 		}
 	}
 
@@ -345,12 +346,12 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> implements Set<T> {
 	 * systematic lossage, as well as to incorporate impact of the highest bits that
 	 * would otherwise never be used in index calculations because of table bounds.
 	 */
-	static private int hash(Object o) {
+	private static int hash(Object o) {
 		int h;
 		return (o == null) ? 0 : (h = o.hashCode()) ^ (h >>> 16);
 	}
 	
-	static private int index(int hash, int capacity) {
+	private static int index(int hash, int capacity) {
 		return (capacity - 1) & hash;
 	}
 	
