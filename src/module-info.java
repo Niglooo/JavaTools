@@ -3,7 +3,7 @@ open module nigloo.tools {
 	
 	requires transitive javafx.base;
 	requires transitive javafx.controls;
-	requires javafx.fxml;
+	requires transitive javafx.fxml;
 	requires transitive javafx.graphics;
 	
 	requires transitive com.google.gson;
