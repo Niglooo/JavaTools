@@ -54,56 +54,52 @@ public class SingletonInjectionContext implements InjectionContext {
 	}
 
 	@Override
-	synchronized public <T> T getInstance(Class<T> clazz) {
+	synchronized public <T> T getInstance(Class<T> clazz)
+	{
+		if (!isSingleton(clazz))
+			return null;
 		
-		T instance = null;
-		
-		if (isSingleton(clazz))
-		{
-			instance = getSingletonInstance(clazz);
-			if (instance != null)
-				return instance;
-			
-			Singleton singletonAnnotation = clazz.getAnnotation(Singleton.class);
-			if (singletonAnnotation != null && singletonAnnotation.implementation() != void.class) {
-				if (clazz.isAssignableFrom(singletonAnnotation.implementation()))
-					singletonImplementionClasses.put(clazz, singletonAnnotation.implementation());
-				else
-					throw new AnnotationFormatError("Invalid value for attribute implementation of @Singleton of class "+clazz.getCanonicalName()+
-							". The value MUST be a class which extends/implements "+clazz.getCanonicalName());
-			}
-			
-			@SuppressWarnings("unchecked")
-			Class<? extends T> implClass = (Class<? extends T>) singletonImplementionClasses.getOrDefault(clazz, clazz);
-			try {
-				Logger.getLogger(this.getClass().getName()).finest("Instanciating "+implClass.getName());
-				instance = implClass.getConstructor().newInstance();
-			}
-			catch (InstantiationException |
-					IllegalAccessException |
-					IllegalArgumentException |
-					InvocationTargetException |
-					NoSuchMethodException |
-					SecurityException e)
-			{
-				throw new InjectionException("Cannot instanciate "+implClass.getName(), e);
-			}
-			
-			/*
-			 *  We test again if there an instance registered because the constructor may have
-			 *  called declareInstanceInjectAndPostConstruct and so the singleton declared itself
-			 */
-			T existingInstance = getSingletonInstance(clazz);
-			
-			if (existingInstance == null)
-				addSingletonInstance(clazz, instance, false);
-			else if (instance != existingInstance)
-				throw new AssertionError("Instance of "+clazz.getName()+" aleady exist (should NOT happen)");
-			
+		T instance = getSingletonInstance(clazz);
+		if (instance != null)
 			return instance;
+		
+		Singleton singletonAnnotation = clazz.getAnnotation(Singleton.class);
+		if (singletonAnnotation != null && singletonAnnotation.implementation() != void.class)
+		{
+			if (clazz.isAssignableFrom(singletonAnnotation.implementation()))
+				singletonImplementionClasses.put(clazz, singletonAnnotation.implementation());
+			else
+				throw new AnnotationFormatError("Invalid value for attribute implementation of @Singleton of class "
+				        + clazz.getCanonicalName() + ". The value MUST be a class which extends/implements "
+				        + clazz.getCanonicalName());
 		}
 		
-		return null;
+		@SuppressWarnings("unchecked")
+		Class<? extends T> implClass = (Class<? extends T>) singletonImplementionClasses.getOrDefault(clazz, clazz);
+		try
+		{
+			Logger.getLogger(this.getClass().getName()).finest("Instanciating " + implClass.getName());
+			instance = implClass.getConstructor().newInstance();
+		}
+		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+		       NoSuchMethodException | SecurityException e)
+		{
+			throw new InjectionException("Cannot instanciate " + implClass.getName(), e);
+		}
+		
+		/*
+		 * We test again if there an instance registered because the constructor may
+		 * have called declareInstanceInjectAndPostConstruct and so the singleton
+		 * declared itself
+		 */
+		T existingInstance = getSingletonInstance(clazz);
+		
+		if (existingInstance == null)
+			addSingletonInstance(clazz, instance, false);
+		else if (instance != existingInstance)
+			throw new AssertionError("Instance of " + clazz.getName() + " aleady exist (should NOT happen)");
+		
+		return instance;
 	}
 	
 	
