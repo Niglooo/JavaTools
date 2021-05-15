@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import nigloo.tool.collection.WeakIdentityHashSet;
 import nigloo.tool.injection.annotation.Inject;
@@ -34,7 +33,7 @@ public class Injector
 	 * Set of already constructed instances.
 	 * Needed to avoid double construction due to circular dependencies
 	 */
-	private static Set<Object> initializedInstances = new WeakIdentityHashSet<>();
+	private static WeakIdentityHashSet<Object> initializedInstances = new WeakIdentityHashSet<>();
 	
 	static {
 		contexts.add(new FreeInjectionContext());
