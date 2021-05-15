@@ -1,36 +1,39 @@
 package nigloo.tool;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 
-public class PrintString extends PrintStream {
-
-	private final ByteArrayOutputStream baos;
+public class PrintString extends PrintWriter
+{
+	private final CharArrayWriter caw;
 	
-	
-	public PrintString() {
-		this(new ByteArrayOutputStream());
+	public PrintString()
+	{
+		this(new CharArrayWriter());
 	}
 	
-	private PrintString(ByteArrayOutputStream baos) {
-		super(baos);
-		this.baos = baos;
+	private PrintString(CharArrayWriter caw)
+	{
+		super(caw);
+		this.caw = caw;
 	}
-
 	
-	public void clear() {
+	public void clear()
+	{
 		flush();
-		baos.reset();
+		caw.reset();
 	}
 	
-	public boolean isEmpty() {
+	public boolean isEmpty()
+	{
 		flush();
-		return baos.size() == 0;
+		return caw.size() == 0;
 	}
 	
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		flush();
-		return baos.toString();
+		return caw.toString();
 	}
 }
