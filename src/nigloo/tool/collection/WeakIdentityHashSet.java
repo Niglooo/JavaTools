@@ -248,11 +248,9 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> {
 	private Node<T> getNode(Object value) {
 		int index = index(hash(value), table.length);
 		
-		for (Node<T> node = table[index] ; node != null ; node = node.next) {
-			if (node.get() == value) {
+		for (Node<T> node = table[index] ; node != null ; node = node.next)
+			if (node.get() == value)// TODO use node.refersTo(value) instead in java 16
 				return node;
-			}
-		}
 		
 		return null;
 	}
@@ -314,8 +312,8 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> {
 		}
 	}
 	
-	private static class Node<T> extends WeakReference<T> {
-		
+	private static class Node<T> extends WeakReference<T>
+	{
 		final int hash;
 		Node<T> next;
 		
@@ -341,10 +339,10 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> {
 	 * apply a transform that spreads the impact of higher bits downward. There is a
 	 * tradeoff between speed, utility, and quality of bit-spreading. Because many
 	 * common sets of hashes are already reasonably distributed (so don't benefit
-	 * from spreading), and because we use trees to handle large sets of collisions
-	 * in bins, we just XOR some shifted bits in the cheapest possible way to reduce
-	 * systematic lossage, as well as to incorporate impact of the highest bits that
-	 * would otherwise never be used in index calculations because of table bounds.
+	 * from spreading), we just XOR some shifted bits in the cheapest possible way
+	 * to reduce systematic lossage, as well as to incorporate impact of the highest
+	 * bits that would otherwise never be used in index calculations because of
+	 * table bounds.
 	 */
 	private static int hash(Object o) {
 		int h;
