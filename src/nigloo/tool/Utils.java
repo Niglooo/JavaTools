@@ -30,4 +30,10 @@ public class Utils {
 	public static boolean isNotBlank(String s) {
 		return !isBlank(s);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T cast(Object o)
+	{
+		return (T) o;
+	}
 }
