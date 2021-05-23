@@ -9,6 +9,13 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
+/**
+ * A nullSafe {@link TypeAdapter} mapping {@link Path} as String.
+ * 
+ * @implNote Use {@link Path#toString()} and
+ *           {@link Paths#get(String, String...)} for mapping
+ * 			
+ */
 public class PathTypeAdapter extends TypeAdapter<Path> {
 
 	@Override
