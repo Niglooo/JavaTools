@@ -58,6 +58,9 @@ public class JsonHelper
 			if (resultType.isAssignableFrom(element.getClass()))
 				return Utils.cast(element);
 			
+			if (element.isJsonNull())
+				return null;
+			
 			try {
 				// Final classes
 				if (resultType == Long.class || resultType == long.class)
