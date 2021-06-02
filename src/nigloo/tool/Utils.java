@@ -40,6 +40,9 @@ public class Utils
 					int res = compareIgnoreCase(c1, c2);
 					if (res != 0)
 						return res;
+					
+					idx1++;
+					idx2++;
 				}
 				else
 				{
@@ -47,20 +50,18 @@ public class Utils
 					while (digitEnd1 < len1 && Character.isDigit(seq1.charAt(digitEnd1)))
 						digitEnd1++;
 					long number1 = Long.parseLong(seq1, idx1, digitEnd1, 10);
-					idx1 = digitEnd1 - 1;
 					
 					int digitEnd2 = idx2 + 1;
 					while (digitEnd2 < len2 && Character.isDigit(seq2.charAt(digitEnd2)))
 						digitEnd2++;
 					long number2 = Long.parseLong(seq2, idx2, digitEnd2, 10);
-					idx2 = digitEnd2 - 1;
 					
 					if (number1 != number2)
 						return (number1 < number2) ? -1 : 1;
+					
+					idx1 = digitEnd1;
+					idx2 = digitEnd2;
 				}
-				
-				idx1++;
-				idx2++;
 			}
 		}
 	}
