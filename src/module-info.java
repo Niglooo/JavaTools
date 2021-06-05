@@ -14,6 +14,7 @@ open module nigloo.tools {
 	exports nigloo.tool.injection;
 	exports nigloo.tool.injection.annotation;
 	exports nigloo.tool.injection.impl;
+	exports nigloo.tool.javafx;
 	exports nigloo.tool.javafx.component;
 	exports nigloo.tool.thread;
 }
