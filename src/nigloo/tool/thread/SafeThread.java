@@ -6,6 +6,47 @@ public class SafeThread extends Thread
 	private volatile boolean stop = false;
 	private final Object mutex = new Object();
 	
+	public SafeThread() {}
+	
+	public SafeThread(Runnable target)
+	{
+		super();
+	}
+	
+	public SafeThread(ThreadGroup group, Runnable target)
+	{
+		super(group, target);
+	}
+	
+	public SafeThread(String name)
+	{
+		super(name);
+	}
+	
+	public SafeThread(ThreadGroup group, String name)
+	{
+		super(group, name);
+	}
+	
+	public SafeThread(Runnable target, String name)
+	{
+		super(target, name);
+	}
+	
+	public SafeThread(ThreadGroup group, Runnable target, String name)
+	{
+		super(group, target, name);
+	}
+	
+	public SafeThread(ThreadGroup group, Runnable target, String name, long stackSize)
+	{
+		super(group, target, name, stackSize);
+	}
+	
+	public SafeThread(ThreadGroup group, Runnable target, String name, long stackSize, boolean inheritThreadLocals)
+	{
+		super(group, target, name, stackSize, inheritThreadLocals);
+	}
 	
 	public final void safeSuspend() {
 		suspended = true;
