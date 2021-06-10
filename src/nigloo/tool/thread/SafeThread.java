@@ -6,7 +6,10 @@ public class SafeThread extends Thread
 	private volatile boolean stop = false;
 	private final Object mutex = new Object();
 	
-	public SafeThread() {}
+	public SafeThread()
+	{
+		super();
+	}
 	
 	public SafeThread(Runnable target)
 	{
