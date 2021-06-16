@@ -75,14 +75,14 @@ public class SafeThread extends Thread
 		}
 	}
 	
-	
-	
-	
+	/***************************************************************************
+	 * * Called only from this thread * *
+	 **************************************************************************/
 	
 	protected final void checkThreadState() throws ThreadStopException
 	{
-		
-		assert this == Thread.currentThread();
+		if (this != Thread.currentThread())
+			throw new IllegalStateException("checkThreadState can only be called from \"this\" Thread");
 		
 		while (suspended)
 		{
