@@ -6,6 +6,8 @@ public class SafeThread extends Thread
 	private volatile boolean stop = false;
 	private final Object mutex = new Object();
 	
+	private long sleepUntil = 0;
+	
 	public SafeThread()
 	{
 		super();
@@ -103,5 +105,32 @@ public class SafeThread extends Thread
 		
 		if (stop)
 			throw new ThreadStopException();
+	}
+	
+	protected final void uninterruptedSleep(long millis) throws ThreadStopException
+	{
+		if (this != Thread.currentThread())
+			throw new IllegalStateException("uninterruptedSleep can only be called from \"this\" Thread");
+		
+		if (millis < 0)
+			throw new IllegalArgumentException("millis must be positive. Got " + millis);
+		
+		long now = System.currentTimeMillis();
+		sleepUntil = now + millis;
+		
+		while (sleepUntil > now)
+		{
+			try
+			{
+				Thread.sleep(sleepUntil - now);
+			}
+			catch (InterruptedException e)
+			{
+			}
+			
+			checkThreadState();
+			
+			now = System.currentTimeMillis();
+		}
 	}
 }
