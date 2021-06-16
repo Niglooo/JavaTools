@@ -51,21 +51,26 @@ public class SafeThread extends Thread
 		super(group, target, name, stackSize, inheritThreadLocals);
 	}
 	
-	public final void safeSuspend() {
+	public final void safeSuspend()
+	{
 		suspended = true;
 	}
 	
-	public final void safeResume() {
+	public final void safeResume()
+	{
 		suspended = false;
-		synchronized (mutex) {
+		synchronized (mutex)
+		{
 			mutex.notify();
 		}
 	}
 	
-	public final void safeStop() {
+	public final void safeStop()
+	{
 		stop = true;
 		interrupt();
-		synchronized (mutex) {
+		synchronized (mutex)
+		{
 			mutex.notify();
 		}
 	}
@@ -74,21 +79,28 @@ public class SafeThread extends Thread
 	
 	
 	
-	final protected void checkThreadState() throws ThreadStopException {
+	protected final void checkThreadState() throws ThreadStopException
+	{
 		
 		assert this == Thread.currentThread();
 		
-		while (suspended) {
+		while (suspended)
+		{
 			if (stop)
 				throw new ThreadStopException();
 			
-			synchronized (mutex) {
-				try {
+			synchronized (mutex)
+			{
+				try
+				{
 					mutex.wait();
-				} catch (InterruptedException e) {}
+				}
+				catch (InterruptedException e)
+				{
+				}
 			}
 		}
-			
+		
 		if (stop)
 			throw new ThreadStopException();
 	}
