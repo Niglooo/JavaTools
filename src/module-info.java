@@ -16,5 +16,6 @@ open module nigloo.tools {
 	exports nigloo.tool.injection.impl;
 	exports nigloo.tool.javafx;
 	exports nigloo.tool.javafx.component;
+	exports nigloo.tool.javafx.component.dialog;
 	exports nigloo.tool.thread;
 }
