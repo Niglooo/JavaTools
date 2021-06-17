@@ -4,7 +4,7 @@ public class SafeThread extends Thread
 {
 	private volatile boolean suspended = false;
 	private volatile boolean stop = false;
-	private final Object mutex = new Object();
+	private final Object canResume = new Object();
 	
 	private long sleepUntil = 0;
 	
@@ -61,9 +61,9 @@ public class SafeThread extends Thread
 	public final void safeResume()
 	{
 		suspended = false;
-		synchronized (mutex)
+		synchronized (canResume)
 		{
-			mutex.notify();
+			canResume.notify();
 		}
 	}
 	
@@ -71,9 +71,9 @@ public class SafeThread extends Thread
 	{
 		stop = true;
 		interrupt();
-		synchronized (mutex)
+		synchronized (canResume)
 		{
-			mutex.notify();
+			canResume.notify();
 		}
 	}
 	
@@ -91,11 +91,11 @@ public class SafeThread extends Thread
 			if (stop)
 				throw new ThreadStopException();
 			
-			synchronized (mutex)
+			synchronized (canResume)
 			{
 				try
 				{
-					mutex.wait();
+					canResume.wait();
 				}
 				catch (InterruptedException e)
 				{
