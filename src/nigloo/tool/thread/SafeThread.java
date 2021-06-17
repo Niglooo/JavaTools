@@ -132,5 +132,7 @@ public class SafeThread extends Thread
 			
 			now = System.currentTimeMillis();
 		}
+		
+		checkThreadState();
 	}
 }
