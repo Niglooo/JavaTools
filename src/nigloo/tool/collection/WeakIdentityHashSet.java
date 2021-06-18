@@ -245,11 +245,12 @@ public class WeakIdentityHashSet<T> extends AbstractSet<T> {
 		while (queue.poll() != null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Node<T> getNode(Object value) {
 		int index = index(hash(value), table.length);
 		
 		for (Node<T> node = table[index] ; node != null ; node = node.next)
-			if (node.get() == value)// TODO use node.refersTo(value) instead in java 16
+			if (node.refersTo((T) value))
 				return node;
 		
 		return null;
