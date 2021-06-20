@@ -11,7 +11,7 @@ import nigloo.tool.javafx.FXUtils;
 
 public class ExceptionDialog extends AlertWithIcon
 {
-	public ExceptionDialog(Exception exception, String errorMessage)
+	public ExceptionDialog(Throwable exception, String errorMessage)
 	{
 		super(AlertType.ERROR);
 		
