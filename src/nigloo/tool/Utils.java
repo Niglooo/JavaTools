@@ -2,6 +2,12 @@ package nigloo.tool;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 
 public class Utils
@@ -119,5 +125,61 @@ public class Utils
 	public static <T> T cast(Object o)
 	{
 		return (T) o;
+	}
+	
+	/**
+	 * Move/rename a file or directory. If the source is a directory and the target
+	 * already exist, merge them.
+	 */
+	public static void move(Path source, Path target, CopyOption... fileMoveOptions) throws IOException
+	{
+		if (!Files.isDirectory(source) || !Files.exists(target))
+		{
+			Files.move(source, target, fileMoveOptions);
+			return;
+		}
+		
+		Files.walkFileTree(source, new FileVisitor<Path>()
+		{
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
+			{
+				Path dirTarget = target.resolve(source.relativize(dir));
+				
+				if (!Files.exists(dirTarget))
+				{
+					Files.move(dir, dirTarget, fileMoveOptions);
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+				
+				return FileVisitResult.CONTINUE;
+			}
+			
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
+			{
+				Path fileTarget = target.resolve(source.relativize(file));
+				Files.move(file, fileTarget, fileMoveOptions);
+				
+				return FileVisitResult.CONTINUE;
+			}
+			
+			@Override
+			public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+			{
+				exc.printStackTrace();
+				return FileVisitResult.CONTINUE;
+			}
+			
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
+			{
+				System.out.println(dir);
+				if (Files.list(dir).findAny().isEmpty())
+					Files.delete(dir);
+				
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 }
