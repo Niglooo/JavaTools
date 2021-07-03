@@ -24,22 +24,24 @@ public class Injector
 	 * - {@link #init(Object)} is a no-op<br/>
 	 * - {@link #getInstance(Class)} always return {@code null}
 	 */
-	private static final boolean DISABLE_INJECTION = false;
+	private static boolean DISABLE_INJECTION = false;
 	
-	
-	private static List<InjectionContext> contexts = new ArrayList<>();
-	
+	public static void DISABLE() {
+		DISABLE_INJECTION = true;
+	}
+
 	/**
 	 * Set of already constructed instances.
 	 * Needed to avoid double construction due to circular dependencies
 	 */
 	private static WeakIdentityHashSet<Object> initializedInstances = new WeakIdentityHashSet<>();
 	
+	private static List<InjectionContext> contexts = new ArrayList<>();
 	static {
 		contexts.add(new FreeInjectionContext());
 	}
 	
-	// the FreeInjectionContext must always stay last since it will always be able to create an instance
+	// the FreeInjectionContext must always stay last since it's always willing to create an instance
 	synchronized public static void addContext(InjectionContext context) {
 		contexts.add(contexts.size()-1, context);
 	}
