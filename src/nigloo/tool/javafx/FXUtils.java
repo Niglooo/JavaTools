@@ -1,10 +1,13 @@
 package nigloo.tool.javafx;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.function.Function;
 
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -64,5 +67,17 @@ public class FXUtils
 		helper.setLineSpacing(DEFAULT_LINE_SPACING);
 		helper.setText(DEFAULT_TEXT);
 		return d;
+	}
+	
+	public static String toRGBA(Color color)
+	{
+		//@formatter:off
+		return "rgba(" +
+				(int)(color.getRed() * 255) + "," +
+				(int)(color.getGreen() * 255) + "," +
+				(int)(color.getBlue() * 255) + "," +
+				new BigDecimal(color.getOpacity()) .setScale(3, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString() +
+				")";
+		//@formatter:on
 	}
 }

@@ -11,6 +11,7 @@ open module nigloo.tools {
 	exports nigloo.tool;
 	exports nigloo.tool.collection;
 	exports nigloo.tool.gson;
+	exports nigloo.tool.gson.javafx;
 	exports nigloo.tool.injection;
 	exports nigloo.tool.injection.annotation;
 	exports nigloo.tool.injection.impl;
