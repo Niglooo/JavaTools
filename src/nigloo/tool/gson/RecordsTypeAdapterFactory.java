@@ -13,6 +13,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 public class RecordsTypeAdapterFactory implements TypeAdapterFactory
@@ -66,12 +67,24 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 		@Override
 		public void write(JsonWriter out, T value) throws IOException
 		{
+			if (value == null)
+			{
+				out.nullValue();
+				return;
+			}
+			
 			delegate.write(out, value);
 		}
 		
 		@Override
 		public T read(JsonReader in) throws IOException
 		{
+			if (in.peek() == JsonToken.NULL)
+			{
+				in.nextNull();
+				return null;
+			}
+			
 			Object[] values = new Object[fields.length];
 			
 			in.beginObject();
