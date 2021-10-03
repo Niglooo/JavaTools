@@ -15,7 +15,7 @@ public class SafeThread extends Thread
 	
 	public SafeThread(Runnable target)
 	{
-		super();
+		super(target);
 	}
 	
 	public SafeThread(ThreadGroup group, Runnable target)
