@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 
 import com.google.gson.Gson;
@@ -33,7 +32,6 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 		private final Gson gson;
 		private final TypeAdapter<T> delegate;
 		private final Field[] fields;
-		private final Method[] accessors;
 		private final Constructor<T> constructor;
 		
 
@@ -46,16 +44,14 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 			{
 				RecordComponent[] components = clazz.getRecordComponents();
 				fields = new Field[components.length];
-				accessors = new Method[components.length];
 				Class<?>[] types = new Class<?>[components.length];
 				for (int i = 0 ; i < components.length ; i++)
 				{
 					fields[i] = clazz.getDeclaredField(components[i].getName());
-					accessors[i] = components[i].getAccessor();
 					types[i] = components[i].getType();
 				}
 				
-				this.constructor = clazz.getConstructor(types);
+				this.constructor = clazz.getDeclaredConstructor(types);
 				this.constructor.setAccessible(true);
 			}
 			catch (Throwable e)
@@ -67,12 +63,6 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 		@Override
 		public void write(JsonWriter out, T value) throws IOException
 		{
-			if (value == null)
-			{
-				out.nullValue();
-				return;
-			}
-			
 			delegate.write(out, value);
 		}
 		
