@@ -12,7 +12,7 @@ import java.util.Comparator;
 
 public class Utils
 {
-	public Utils()
+	private Utils()
 	{
 		throw new UnsupportedOperationException();
 	}
