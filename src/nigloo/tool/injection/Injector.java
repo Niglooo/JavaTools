@@ -24,10 +24,10 @@ public class Injector
 	 * - {@link #init(Object)} is a no-op<br/>
 	 * - {@link #getInstance(Class)} always return {@code null}
 	 */
-	private static boolean DISABLE_INJECTION = false;
+	private static boolean DISABLE_INJECTION = true;
 	
-	public static void DISABLE() {
-		DISABLE_INJECTION = true;
+	public static void ENABLE() {
+		DISABLE_INJECTION = false;
 	}
 
 	/**
