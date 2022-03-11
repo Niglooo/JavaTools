@@ -24,13 +24,13 @@ public class JsonHelper
 	 * @throws IndexOutOfBoundsException
 	 * @throws IllegalArgumentException
 	 */
-	public static JsonElement followPath(JsonElement element, String path)
+	public static String followPath(JsonElement element, String path)
 	        throws NumberFormatException,
 	        IndexOutOfBoundsException,
 	        IllegalArgumentException,
 	        ClassCastException
 	{
-		return followPath(element, path, JsonElement.class);
+		return followPath(element, path, String.class);
 	}
 	
 	/**
