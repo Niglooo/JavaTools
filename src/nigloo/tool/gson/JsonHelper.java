@@ -3,6 +3,7 @@ package nigloo.tool.gson;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
 import nigloo.tool.Utils;
@@ -121,5 +122,20 @@ public class JsonHelper
 			throw new IllegalArgumentException("Cannot access [" + field + "] of " + element);
 		
 		return followPath(subElement, subPath, resultType);
+	}
+	
+	/**
+	 * Equivalent to prettyPrint(json, System.out)
+	 * 
+	 * @param json
+	 */
+	public static void prettyPrint(JsonElement json)
+	{
+		prettyPrint(json, System.out);
+	}
+	
+	public static void prettyPrint(JsonElement json, Appendable out)
+	{
+		new GsonBuilder().setPrettyPrinting().create().toJson(json, out);
 	}
 }
