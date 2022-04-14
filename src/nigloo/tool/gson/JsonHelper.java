@@ -1,10 +1,17 @@
 package nigloo.tool.gson;
 
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.http.HttpResponse.BodyHandler;
+import java.net.http.HttpResponse.BodySubscriber;
+import java.net.http.HttpResponse.BodySubscribers;
+import java.net.http.HttpResponse.ResponseInfo;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import nigloo.tool.Utils;
 
@@ -63,7 +70,8 @@ public class JsonHelper
 			if (element.isJsonNull())
 				return null;
 			
-			try {
+			try
+			{
 				// Final classes
 				if (resultType == Long.class || resultType == long.class)
 					return Utils.cast(element.getAsLong());
@@ -137,5 +145,20 @@ public class JsonHelper
 	public static void prettyPrint(JsonElement json, Appendable out)
 	{
 		new GsonBuilder().setPrettyPrinting().create().toJson(json, out);
+	}
+	
+	public static BodyHandler<JsonElement> httpBodyHandler()
+	{
+		return new BodyHandler<JsonElement>()
+		{
+			@Override
+			public BodySubscriber<JsonElement> apply(ResponseInfo responseInfo)
+			{
+				return BodySubscribers.mapping(BodySubscribers.ofInputStream(), in ->
+				{
+					return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+				});
+			}
+		};
 	}
 }

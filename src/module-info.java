@@ -1,5 +1,6 @@
 open module nigloo.tools {
 	requires java.logging;
+	requires transitive java.net.http;
 	
 	requires transitive javafx.base;
 	requires transitive javafx.controls;
