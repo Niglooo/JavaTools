@@ -81,58 +81,62 @@ public class SafeThread extends Thread
 	 * * Called only from this thread * *
 	 **************************************************************************/
 	
-	protected final void checkThreadState() throws ThreadStopException
+	public static void checkThreadState() throws ThreadStopException
 	{
-		if (this != Thread.currentThread())
-			throw new IllegalStateException("checkThreadState can only be called from \"this\" Thread");
-		
-		while (suspended)
+		if (Thread.currentThread() instanceof SafeThread currentThread)
 		{
-			if (stop)
-				throw new ThreadStopException();
+			while (currentThread.suspended)
+			{
+				if (currentThread.stop)
+					throw new ThreadStopException();
+				
+				synchronized (currentThread.canResume)
+				{
+					try
+					{
+						currentThread.canResume.wait();
+					}
+					catch (InterruptedException e)
+					{
+					}
+				}
+			}
 			
-			synchronized (canResume)
+			if (currentThread.stop)
+				throw new ThreadStopException();
+		}
+		else
+			throw new IllegalStateException("The current thread is not a " + SafeThread.class.getSimpleName());
+	}
+	
+	public static void uninterruptedSleep(long millis) throws ThreadStopException
+	{
+		if (Thread.currentThread() instanceof SafeThread currentThread)
+		{
+			if (millis < 0)
+				throw new IllegalArgumentException("millis must be positive. Got " + millis);
+			
+			long now = System.currentTimeMillis();
+			currentThread.sleepUntil = now + millis;
+			
+			while (currentThread.sleepUntil > now)
 			{
 				try
 				{
-					canResume.wait();
+					Thread.sleep(currentThread.sleepUntil - now);
 				}
 				catch (InterruptedException e)
 				{
 				}
-			}
-		}
-		
-		if (stop)
-			throw new ThreadStopException();
-	}
-	
-	protected final void uninterruptedSleep(long millis) throws ThreadStopException
-	{
-		if (this != Thread.currentThread())
-			throw new IllegalStateException("uninterruptedSleep can only be called from \"this\" Thread");
-		
-		if (millis < 0)
-			throw new IllegalArgumentException("millis must be positive. Got " + millis);
-		
-		long now = System.currentTimeMillis();
-		sleepUntil = now + millis;
-		
-		while (sleepUntil > now)
-		{
-			try
-			{
-				Thread.sleep(sleepUntil - now);
-			}
-			catch (InterruptedException e)
-			{
+				
+				checkThreadState();
+				
+				now = System.currentTimeMillis();
 			}
 			
 			checkThreadState();
-			
-			now = System.currentTimeMillis();
 		}
-		
-		checkThreadState();
+		else
+			throw new IllegalStateException("The current thread is not a " + SafeThread.class.getSimpleName());
 	}
 }
