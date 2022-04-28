@@ -114,6 +114,25 @@ public class Utils
 		return !isBlank(s);
 	}
 	
+	/**
+	 * Return the first non null argument or null if none.
+	 * 
+	 * @param <T>
+	 * @param args
+	 * @return the first non null argument
+	 */
+	public static <T> T coalesce(@SuppressWarnings("unchecked") T... args)
+	{
+		if (args == null)
+			return null;
+		
+		for (T arg : args)
+			if (arg != null)
+				return arg;
+		
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object o)
 	{
