@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class Utils
 {
@@ -193,5 +194,15 @@ public class Utils
 				return FileVisitResult.CONTINUE;
 			}
 		});
+	}
+	
+	
+	public static RuntimeException asRunTimeException(Exception e)
+	{
+		Objects.requireNonNull(e);
+		if (e instanceof RuntimeException re)
+			return re;
+		else
+			return new RuntimeException(e);
 	}
 }
