@@ -8,8 +8,11 @@ import java.net.http.HttpResponse.BodySubscriber;
 import java.net.http.HttpResponse.BodySubscribers;
 import java.net.http.HttpResponse.ResponseInfo;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -160,5 +163,13 @@ public class JsonHelper
 				});
 			}
 		};
+	}
+	
+	public static Stream<JsonElement> stream(JsonArray jArray)
+	{
+		if (jArray == null)
+			return Stream.empty();
+		
+		return StreamSupport.stream(jArray.spliterator(), false);
 	}
 }
