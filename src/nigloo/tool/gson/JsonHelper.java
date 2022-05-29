@@ -94,7 +94,7 @@ public class JsonHelper
 						throw new UnsupportedOperationException();
 					return Utils.cast(str.charAt(0));
 				}
-				if (resultType == String.class)
+				if (resultType.isAssignableFrom(String.class))
 					return Utils.cast(element.getAsString());
 				
 				// Can be subclassed => use isAssignableFrom
