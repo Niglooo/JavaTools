@@ -51,13 +51,14 @@ public class StopWatch
 	private long split;
 	private long stop;
 	
-	public void start()
+	public StopWatch start()
 	{
 		if (isRunning())
 			throw new IllegalStateException("already started");
 		
 		state = State.STARTED_NO_SLPIT;
 		start = System.nanoTime();
+		return this;
 	}
 	
 	public long split()
@@ -87,6 +88,7 @@ public class StopWatch
 			throw new IllegalStateException("not running");
 		
 		long time = split();
+		stop = split;
 		state = State.STOPPED;
 		return time;
 	}
