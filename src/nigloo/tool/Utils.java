@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 public class Utils
 {
@@ -204,5 +206,18 @@ public class Utils
 			return re;
 		else
 			return new RuntimeException(e);
+	}
+	
+	public static <T> CompletableFuture<T> observe(CompletableFuture<T> cf, BiConsumer<? super T, Throwable> action)
+	{
+		Objects.requireNonNull(action, "action cannot be null");
+		return cf.handle((result, error) ->
+		{
+			action.accept(result, error);
+			if (error != null)
+				return CompletableFuture.<T>failedFuture(error);
+			else
+				return CompletableFuture.completedFuture(result);
+		}).thenCompose(f -> f);
 	}
 }
