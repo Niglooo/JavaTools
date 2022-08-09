@@ -1,12 +1,10 @@
 package nigloo.tool.injection.impl;
 
 import java.lang.annotation.AnnotationFormatError;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import nigloo.tool.injection.InjectionContext;
 import nigloo.tool.injection.InjectionException;
@@ -76,16 +74,7 @@ public class SingletonInjectionContext implements InjectionContext {
 		
 		@SuppressWarnings("unchecked")
 		Class<? extends T> implClass = (Class<? extends T>) singletonImplementionClasses.getOrDefault(clazz, clazz);
-		try
-		{
-			Logger.getLogger(this.getClass().getName()).finest("Instanciating " + implClass.getName());
-			instance = implClass.getConstructor().newInstance();
-		}
-		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-		       NoSuchMethodException | SecurityException e)
-		{
-			throw new InjectionException("Cannot instanciate " + implClass.getName(), e);
-		}
+		instance = instanciate(implClass);
 		
 		/*
 		 * We test again if there an instance registered because the constructor may
@@ -97,7 +86,7 @@ public class SingletonInjectionContext implements InjectionContext {
 		if (existingInstance == null)
 			addSingletonInstance(clazz, instance, false);
 		else if (instance != existingInstance)
-			throw new AssertionError("Instance of " + clazz.getName() + " aleady exist (should NOT happen)");
+			throw new AssertionError("Instance of " + clazz.getName() + " already exist (should NOT happen)");
 		
 		return instance;
 	}

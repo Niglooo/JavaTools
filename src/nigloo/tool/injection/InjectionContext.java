@@ -1,6 +1,8 @@
 package nigloo.tool.injection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
 public interface InjectionContext
 {
@@ -36,5 +38,23 @@ public interface InjectionContext
 	 */
 	default boolean declareInstance(Object instance) {
 		return false;
+	}
+	
+	default <T> T instanciate(Class<T> clazz) {
+		Logger.getLogger(getClass().getName()).finest("Instanciating "+clazz.getName());
+		try {
+			//TODO Call other constructor if available (inject parameters)
+			//if several constructors, error
+			return clazz.getConstructor().newInstance();
+		}
+		catch (InstantiationException |
+				IllegalAccessException |
+				IllegalArgumentException |
+				InvocationTargetException |
+				NoSuchMethodException |
+				SecurityException e)
+		{
+			throw new InjectionException("Cannot instanciate "+clazz.getName(), e);
+		}
 	}
 }
