@@ -116,13 +116,13 @@ public class SingletonInjectionContext implements InjectionContext {
 	
 	private void addSingletonInstance(Class<?> clazz, Object instance, boolean replaceInstance) {
 
-		if (!replaceInstance && hasSingletonInstance(clazz))
-			throw new InjectionException("An instance of "+clazz+" already exists");
+		if (!replaceInstance)
+		{
+			Object existingInstance = singletonInstances.get(clazz);
+			if (existingInstance != null && existingInstance != instance)
+				throw new InjectionException("An instance of "+clazz+" already exists");
+		}
 		
 		singletonInstances.put(clazz, instance);
-	}
-	
-	private boolean hasSingletonInstance(Class<?> clazz) {
-		return singletonInstances.get(clazz) != null;
 	}
 }
