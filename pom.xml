@@ -22,6 +22,16 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
+		<resources>
+			<resource>
+				<directory>src/nigloo/tool/javafx/internal</directory>
+				<targetPath>nigloo/tool/javafx/internal</targetPath>
+				<includes>
+					<include>*.*</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
 	<dependencies>
