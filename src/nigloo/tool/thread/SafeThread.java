@@ -83,59 +83,61 @@ public class SafeThread extends Thread
 	
 	public static void checkThreadState() throws ThreadStopException
 	{
-		if (Thread.currentThread() instanceof SafeThread currentThread)
+		SafeThread currentThread = getCurrentSafeThread();
+		
+		while (currentThread.suspended)
 		{
-			while (currentThread.suspended)
-			{
-				if (currentThread.stop)
-					throw new ThreadStopException();
-				
-				synchronized (currentThread.canResume)
-				{
-					try
-					{
-						currentThread.canResume.wait();
-					}
-					catch (InterruptedException e)
-					{
-					}
-				}
-			}
-			
 			if (currentThread.stop)
 				throw new ThreadStopException();
-		}
-		else
-			throw new IllegalStateException("The current thread is not a " + SafeThread.class.getSimpleName());
-	}
-	
-	public static void uninterruptedSleep(long millis) throws ThreadStopException
-	{
-		if (Thread.currentThread() instanceof SafeThread currentThread)
-		{
-			if (millis < 0)
-				throw new IllegalArgumentException("millis must be positive. Got " + millis);
 			
-			long now = System.currentTimeMillis();
-			currentThread.sleepUntil = now + millis;
-			
-			while (currentThread.sleepUntil > now)
+			synchronized (currentThread.canResume)
 			{
 				try
 				{
-					Thread.sleep(currentThread.sleepUntil - now);
+					currentThread.canResume.wait();
 				}
 				catch (InterruptedException e)
 				{
 				}
-				
-				checkThreadState();
-				
-				now = System.currentTimeMillis();
+			}
+		}
+		
+		if (currentThread.stop)
+			throw new ThreadStopException();
+	}
+	
+	public static void uninterruptedSleep(long millis) throws ThreadStopException
+	{
+		SafeThread currentThread = getCurrentSafeThread();
+		
+		if (millis < 0)
+			throw new IllegalArgumentException("millis must be positive. Got " + millis);
+		
+		long now = System.currentTimeMillis();
+		currentThread.sleepUntil = now + millis;
+		
+		while (currentThread.sleepUntil > now)
+		{
+			try
+			{
+				Thread.sleep(currentThread.sleepUntil - now);
+			}
+			catch (InterruptedException e)
+			{
 			}
 			
 			checkThreadState();
+			
+			now = System.currentTimeMillis();
 		}
+		
+		checkThreadState();
+	}
+	
+	private static SafeThread getCurrentSafeThread() throws ThreadStopException
+	{
+		if (Thread.currentThread() instanceof SafeThread currentThread)
+			return currentThread;
 		else
 			throw new IllegalStateException("The current thread is not a " + SafeThread.class.getSimpleName());
 	}
