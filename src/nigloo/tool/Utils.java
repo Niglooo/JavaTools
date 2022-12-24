@@ -220,4 +220,28 @@ public class Utils
 				return CompletableFuture.completedFuture(result);
 		}).thenCompose(f -> f);
 	}
+	
+	public static String getExtention(String filename)
+	{
+		if (isBlank(filename))
+			return null;
+		
+		int posExt = filename.lastIndexOf('.');
+		if (posExt <= 0) // or equals because if the filename start with a point, then it's a hidden file.
+			return null;
+		
+		return filename.substring(posExt);
+	}
+	
+	public static String getExtention(Path path)
+	{
+		if (path == null)
+			return null;
+		
+		Path filename = path.getFileName();
+		if (filename == null)
+			return null;
+		
+		return getExtention(filename.toString());
+	}
 }
