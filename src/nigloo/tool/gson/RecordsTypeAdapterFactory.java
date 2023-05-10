@@ -54,7 +54,7 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 				this.constructor = clazz.getDeclaredConstructor(types);
 				this.constructor.setAccessible(true);
 			}
-			catch (Throwable e)
+			catch (NoSuchFieldException | NoSuchMethodException e)
 			{
 				throw new RuntimeException(e);
 			}
@@ -104,7 +104,7 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 			catch (InstantiationException | IllegalAccessException | IllegalArgumentException |
 			       InvocationTargetException e)
 			{
-				throw new JsonParseException("Cannot instanciate " + constructor.getDeclaringClass() + " using "
+				throw new JsonParseException("Cannot instantiate " + constructor.getDeclaringClass() + " using "
 				        + constructor, e);
 			}
 		}
