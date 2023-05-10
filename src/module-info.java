@@ -20,5 +20,6 @@ open module nigloo.tools {
 	exports nigloo.tool.javafx;
 	exports nigloo.tool.javafx.component;
 	exports nigloo.tool.javafx.component.dialog;
+	exports nigloo.tool.parser.grammar;
 	exports nigloo.tool.thread;
 }
