@@ -30,6 +30,10 @@ public class Injector
 		DISABLE_INJECTION = false;
 	}
 
+	public static boolean enabled() {
+		return !DISABLE_INJECTION;
+	}
+
 	/**
 	 * Set of already constructed instances.
 	 * Needed to avoid double construction due to circular dependencies
