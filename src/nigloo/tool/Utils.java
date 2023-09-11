@@ -8,6 +8,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.Normalizer;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -115,6 +116,11 @@ public class Utils
 	public static boolean isNotBlank(String s)
 	{
 		return !isBlank(s);
+	}
+
+	public static String stripAccents(String input)
+	{
+		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}", "");
 	}
 	
 	/**
