@@ -78,21 +78,20 @@ public class RecordsTypeAdapterFactory implements TypeAdapterFactory
 			Object[] values = new Object[fields.length];
 			
 			in.beginObject();
-			
+
+			loopJsonField:
 			while (in.hasNext())
 			{
 				String name = in.nextName();
-				int i;
-				for (i = 0 ; i < fields.length ; i++)
+				for (int i = 0 ; i < fields.length ; i++)
 				{
 					if (gson.fieldNamingStrategy().translateName(fields[i]).equals(name))
 					{
 						values[i] = gson.fromJson(in, fields[i].getGenericType());
-						break;
+						continue loopJsonField;
 					}
 				}
-				if (i == fields.length)
-					in.skipValue();
+				in.skipValue();
 			}
 			
 			in.endObject();
