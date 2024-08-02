@@ -16,6 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import com.google.gson.JsonSyntaxException;
 import nigloo.tool.Utils;
 
 public class JsonHelper
@@ -152,6 +153,11 @@ public class JsonHelper
 	
 	public static BodyHandler<JsonElement> httpBodyHandler()
 	{
+		return httpBodyHandler(false);
+	}
+
+	public static BodyHandler<JsonElement> httpBodyHandler(boolean throwJsonSyntaxException)
+	{
 		return new BodyHandler<JsonElement>()
 		{
 			@Override
@@ -159,7 +165,14 @@ public class JsonHelper
 			{
 				return BodySubscribers.mapping(BodySubscribers.ofInputStream(), in ->
 				{
-					return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+					try {
+						return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+					} catch (JsonSyntaxException e) {
+						if (throwJsonSyntaxException)
+							throw e;
+						else
+							return null;
+					}
 				});
 			}
 		};
