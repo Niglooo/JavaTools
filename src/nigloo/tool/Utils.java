@@ -8,6 +8,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Comparator;
 import java.util.Objects;
@@ -25,7 +26,16 @@ public class Utils
 	
 	private static class NaturalOrderComparator implements Comparator<CharSequence>
 	{
-		@Override
+		private final Collator collator;
+
+		NaturalOrderComparator()
+        {
+            this.collator = Collator.getInstance();
+			this.collator.setDecomposition(Collator.FULL_DECOMPOSITION);
+			this.collator.setStrength(Collator.PRIMARY);
+        }
+
+        @Override
 		public int compare(CharSequence seq1, CharSequence seq2)
 		{
 			int len1 = seq1.length();
@@ -47,12 +57,23 @@ public class Utils
 				
 				if (!Character.isDigit(c1) || !Character.isDigit(c2))
 				{
-					int res = compareIgnoreCase(c1, c2);
+					int txtEnd1 = idx1 + 1;
+					int txtEnd2 = idx2 + 1;
+
+					while (txtEnd1 < len1 && txtEnd2 < len2 && !(Character.isDigit(seq1.charAt(txtEnd1)) && Character.isDigit(seq2.charAt(txtEnd2)))) {
+						txtEnd1++;
+						txtEnd2++;
+					}
+
+					String txt1 = seq1.subSequence(idx1, txtEnd1).toString();
+					String txt2 = seq2.subSequence(idx2, txtEnd2).toString();
+
+					int res = collator.compare(txt1, txt2);
 					if (res != 0)
 						return res;
-					
-					idx1++;
-					idx2++;
+
+					idx1 = txtEnd1;
+					idx2 = txtEnd2;
 				}
 				else
 				{
@@ -74,24 +95,6 @@ public class Utils
 				}
 			}
 		}
-	}
-	
-	public static int compareIgnoreCase(char c1, char c2)
-	{
-		if (c1 == c2)
-			return 0;
-		
-		c1 = Character.toUpperCase(c1);
-		c2 = Character.toUpperCase(c2);
-		if (c1 == c2)
-			return 0;
-		
-		c1 = Character.toLowerCase(c1);
-		c2 = Character.toLowerCase(c2);
-		if (c1 == c2)
-			return 0;
-		
-		return c1 - c2;
 	}
 	
 	public static void closeQuietly(Closeable closeable)
