@@ -18,6 +18,8 @@ public class ExceptionDialog extends AlertWithIcon
 		this.setTitle("Exception Dialog");
 		this.setHeaderText(errorMessage);
 		this.setContentText(exception.getMessage());
+		if (this.getContentText() == null || this.getContentText().isBlank())
+			this.setContentText(exception.getClass().getSimpleName());
 		
 		// Create expandable Exception.
 		StringWriter sw = new StringWriter();
