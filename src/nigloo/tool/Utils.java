@@ -2,6 +2,7 @@ package nigloo.tool;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.CopyOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -213,6 +214,8 @@ public class Utils
 		Objects.requireNonNull(e);
 		if (e instanceof RuntimeException re)
 			return re;
+		else if (e instanceof IOException ioe)
+			return new UncheckedIOException(ioe);
 		else
 			return new RuntimeException(e);
 	}
