@@ -8,6 +8,7 @@ open module nigloo.tools {
 	requires transitive javafx.graphics;
 	
 	requires transitive com.google.gson;
+	requires pickle;
 
 	exports nigloo.tool;
 	exports nigloo.tool.collection;
