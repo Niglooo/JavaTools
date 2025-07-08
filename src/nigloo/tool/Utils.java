@@ -12,7 +12,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -150,6 +153,17 @@ public class Utils
 	public static <T> T cast(Object o)
 	{
 		return (T) o;
+	}
+
+	@SafeVarargs
+    public static <T extends Enum<T>> Set<T> asSet(T... options) {
+		if (options == null || options.length == 0)
+			return Set.of();
+
+		EnumSet<T> set = EnumSet.noneOf((Class<T>) options.getClass().componentType());
+		set.addAll(List.of(options));
+
+		return set;
 	}
 	
 	/**
