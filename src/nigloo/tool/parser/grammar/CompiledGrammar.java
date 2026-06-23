@@ -19,7 +19,7 @@ public class CompiledGrammar<T extends Enum<T> & GrammarElement, Out> {
         this.start = start;
     }
 
-    public Out compile(Iterator<Token<T>> input) throws ParseException {
+    public Out parse(Iterator<Token<T>> input) throws ParseException {
 
         TokenStream tokenStream = new TokenStream(input);
 
