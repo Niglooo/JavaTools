@@ -2,14 +2,15 @@ package nigloo.tool.parser.grammar;
 
 import java.util.*;
 
-class TokenStream<T extends Enum<T> & GrammarElement> implements Iterator<Token<T>> {
+class TokenStream implements Iterator<Token<?>> {
 
-    private final Iterator<Token<T>> input;
-    private Token<T> peeked;
+    private final Iterator<Token<?>> input;
+    private Token<?> peeked;
     private boolean endOfInputConsumed = false;
 
-    public TokenStream(Iterator<Token<T>> input) {
-        this.input = Objects.requireNonNull(input, "input");
+    public <T extends Enum<T> & GrammarElement> TokenStream(Iterator<Token<T>> input) {
+        //noinspection unchecked
+        this.input = (Iterator<Token<?>>)(Iterator<?>) Objects.requireNonNull(input, "input");
         this.peeked = null;
     }
 
@@ -19,13 +20,13 @@ class TokenStream<T extends Enum<T> & GrammarElement> implements Iterator<Token<
     }
 
     @Override
-    public Token<T> next() {
+    public Token<?> next() {
         if (!hasNext())
             throw new NoSuchElementException();
 
         if (peeked != null) {
-            Token<T> element = peeked;
-            endOfInputConsumed = (peeked == Token.END_OF_INPUT());
+            Token<?> element = peeked;
+            endOfInputConsumed = (peeked == Token.END_OF_INPUT);
             peeked = null;
             return element;
         }
@@ -35,10 +36,10 @@ class TokenStream<T extends Enum<T> & GrammarElement> implements Iterator<Token<
         }
 
         endOfInputConsumed = true;
-        return Token.END_OF_INPUT();
+        return Token.END_OF_INPUT;
     }
 
-    public Token<T> peek() {
+    public Token<?> peek() {
         if (!hasNext())
             return null;
 
@@ -46,7 +47,7 @@ class TokenStream<T extends Enum<T> & GrammarElement> implements Iterator<Token<
             return peeked;
         }
 
-        peeked = input.hasNext() ? input.next() : Token.END_OF_INPUT();
+        peeked = input.hasNext() ? input.next() : Token.END_OF_INPUT;
         return peeked;
     }
 }

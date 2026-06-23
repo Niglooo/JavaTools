@@ -1,7 +1,12 @@
 package nigloo.tool.parser.grammar;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CompiledGrammar<T extends Enum<T> & GrammarElement, Out> {
@@ -16,18 +21,18 @@ public class CompiledGrammar<T extends Enum<T> & GrammarElement, Out> {
 
     public Out compile(Iterator<Token<T>> input) throws ParseException {
 
-        TokenStream<T> tokenStream = new TokenStream<>(input);
+        TokenStream tokenStream = new TokenStream(input);
 
-        ASTNode<T, Out> astRoot = new ASTNode<>(start, null);
-        Deque<ASTNode<T, Out>> stack = new ArrayDeque<>();
-        stack.push(new ASTNode<>(Token.Type.END_OF_INPUT, null));
+        ASTNode<Out> astRoot = new ASTNode<>(start, null);
+        Deque<ASTNode<Out>> stack = new ArrayDeque<>();
+        stack.push(new ASTNode<>(Token.END_OF_INPUT.type(), null));
         stack.push(astRoot);
 
-        while (tokenStream.peek() != null) {
-            ASTNode<T, Out> astNode = stack.pop();
+        while (tokenStream.hasNext()) {
+            ASTNode<Out> astNode = stack.pop();
             GrammarElement top = astNode.element;
-            Token<T> token = tokenStream.peek();
-            GrammarElement next = (token == Token.END_OF_INPUT()) ? Token.Type.END_OF_INPUT : token.type();
+            Token<?> token = tokenStream.peek();
+            GrammarElement next =  token.type();
 
             if (!(top instanceof GrammarRule)) { // Terminal
                 // If top of the stack matches next input token, consume the input
@@ -68,23 +73,23 @@ public class CompiledGrammar<T extends Enum<T> & GrammarElement, Out> {
         return new ParseException("Syntax error at " + pos + ": "+message, token.offset());
     }
 
-    private static class ASTNode<T extends Enum<T> & GrammarElement, Out> {
+    private static class ASTNode<Out> {
 
         final GrammarElement element;
-        final List<ASTNode<T, Out>> children = new ArrayList<>();
-        Token<T> token = null;
+        final List<ASTNode<Out>> children = new ArrayList<>();
+        Token<?> token = null;
         GrammarSequence<Out> grammarSequence = null;
 
 
-        ASTNode (GrammarElement element, ASTNode<T, Out> parent) {
+        ASTNode (GrammarElement element, ASTNode<Out> parent) {
             this.element = element;
             if (parent != null)
-                parent.children.add(0, this);
+                parent.children.addFirst(this);
         }
 
         Out evaluate() {
             List<Object> childrenResult = new ArrayList<>(children.size());
-            for (ASTNode<T, Out> child : children) {
+            for (ASTNode<Out> child : children) {
                 if (child.token != null)
                     childrenResult.add(child.token);
                 else

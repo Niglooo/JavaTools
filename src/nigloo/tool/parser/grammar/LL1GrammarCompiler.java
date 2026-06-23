@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static nigloo.tool.parser.grammar.Token.Type.END_OF_INPUT;
+import static nigloo.tool.parser.grammar.Token.END_OF_INPUT;
 
 public class LL1GrammarCompiler {
 
@@ -16,7 +16,7 @@ public class LL1GrammarCompiler {
 
         @SuppressWarnings("unchecked")
         GrammarRule<Out> syntheticStart = new GrammarRule<>("SYNTHETIC_START", List.of(new GrammarSequence<>(
-                List.of(grammar.start(), END_OF_INPUT), evaluatedTokens -> (Out) evaluatedTokens.get(0))));
+                List.of(grammar.start(), END_OF_INPUT.type()), evaluatedTokens -> (Out) evaluatedTokens.getFirst())));
 
         ArrayList<GrammarRule<Out>> rules = new ArrayList<>(grammar.rules().size() + 1);
         rules.add(syntheticStart);
@@ -84,7 +84,7 @@ public class LL1GrammarCompiler {
         Map<GrammarElement, Set<GrammarElement>> first = new HashMap<>();
 
         // To simplify first/follow logic, define first(t) = {t} for any terminal t
-        first.put(END_OF_INPUT, Set.of(END_OF_INPUT));
+        first.put(END_OF_INPUT.type(), Set.of(END_OF_INPUT.type()));
         for (GrammarElement terminal : terminals)
             first.put(terminal, Set.of(terminal));
         for (GrammarRule<Out> rule : rules)
@@ -166,7 +166,7 @@ public class LL1GrammarCompiler {
         GrammarElement[] values = tokenType.getEnumConstants();
         ArrayList<GrammarElement> terminals = new ArrayList<>(values.length + 1);
         terminals.addAll(Arrays.asList(values));
-        terminals.add(END_OF_INPUT);
+        terminals.add(END_OF_INPUT.type());
         return terminals;
     }
 }
