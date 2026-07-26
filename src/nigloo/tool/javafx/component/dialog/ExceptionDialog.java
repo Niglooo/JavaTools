@@ -17,9 +17,14 @@ public class ExceptionDialog extends AlertWithIcon
 		
 		this.setTitle("Exception Dialog");
 		this.setHeaderText(errorMessage);
-		this.setContentText(exception.getMessage());
-		if (this.getContentText() == null || this.getContentText().isBlank())
-			this.setContentText(exception.getClass().getSimpleName());
+
+		String contentText = exception.getMessage();
+		if (contentText == null || contentText.isBlank())
+			contentText = exception.getClass().getSimpleName();
+		else if (contentText.length() > 200) {
+			contentText = contentText.substring(0, 200) + "…";
+		}
+		this.setContentText(contentText);
 		
 		// Create expandable Exception.
 		StringWriter sw = new StringWriter();
@@ -33,7 +38,7 @@ public class ExceptionDialog extends AlertWithIcon
 		TextArea textArea = new TextArea(exceptionText);
 		textArea.setEditable(false);
 		textArea.setWrapText(true);
-		textArea.setPrefWidth(FXUtils.computeTextWidth(textArea.getFont(), textArea.getText(), 0.0D) + 50);
+		textArea.setPrefWidth(Math.min(400, FXUtils.computeTextWidth(textArea.getFont(), textArea.getText(), 0.0D) + 50));
 		
 		textArea.setMaxWidth(Double.MAX_VALUE);
 		textArea.setMaxHeight(Double.MAX_VALUE);
